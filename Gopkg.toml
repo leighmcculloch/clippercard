@@ -1,0 +1,3 @@
+[[constraint]]
+  name = "github.com/unidoc/unidoc"
+  version = "2.0.1"
