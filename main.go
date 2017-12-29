@@ -67,72 +67,78 @@ func pdfToCsv(w io.Writer, r io.ReadSeeker) error {
 			return err
 		}
 
-		contentStreams, err := page.GetContentStreams()
+		err = pdfPageToCsv(csvWriter, page)
 		if err != nil {
 			return err
-		}
-
-		lastX := 0
-		columnXs := make([]int, 8)
-		columns := make([]string, 8)
-
-		for _, contentStream := range contentStreams {
-			parser := pdfcontent.NewContentStreamParser(contentStream)
-			ops, err := parser.Parse()
-			if err != nil {
-				return err
-			}
-			for _, op := range *ops {
-				if op.Operand == "Tm" && len(op.Params) == 6 {
-					switch x := op.Params[4].(type) {
-					case *pdfcore.PdfObjectFloat:
-						lastX = int(float64(*x))
-					case *pdfcore.PdfObjectInteger:
-						lastX = int(*x)
-					}
-				} else if op.Operand == "Tj" && len(op.Params) == 1 {
-					s := op.Params[0].(*pdfcore.PdfObjectString).String()
-					switch {
-					case ignore(s):
-					case s == "TRANSACTION TYPE":
-						columnXs[1] = lastX
-					case s == "LOCATION":
-						columnXs[2] = lastX
-					case s == "ROUTE":
-						columnXs[3] = lastX
-					case s == "PRODUCT":
-						columnXs[4] = lastX
-					case s == "DEBIT":
-						columnXs[5] = lastX
-					case s == "CREDIT":
-						columnXs[6] = lastX
-					case s == "BALANCE*":
-						columnXs[7] = lastX
-					default:
-						if timeParseable("01/02/2006 15:04 PM", s) && !stringSliceEmpty(columns) {
-							csvWriter.Write(columns)
-							for r := range columns {
-								columns[r] = ""
-							}
-						}
-						var i int
-						for i = len(columnXs) - 1; i >= 0; i-- {
-							if lastX >= columnXs[i] {
-								break
-							}
-						}
-						columns[i] = s
-					}
-				}
-			}
-		}
-
-		if len(columns) > 0 {
-			csvWriter.Write(columns)
 		}
 	}
 
 	csvWriter.Flush()
+
+	return nil
+}
+
+func pdfPageToCsv(csvWriter *csv.Writer, page *pdf.PdfPage) error {
+	contentStreams, err := page.GetContentStreams()
+	if err != nil {
+		return err
+	}
+
+	lastX := 0
+	columHeadingsIndexes := map[string]int{
+		"TRANSACTION TYPE": 1,
+		"LOCATION":         2,
+		"ROUTE":            3,
+		"PRODUCT":          4,
+		"DEBIT":            5,
+		"CREDIT":           6,
+		"BALANCE*":         7,
+	}
+	columnXs := make([]int, 8)
+	columns := make([]string, 8)
+
+	for _, contentStream := range contentStreams {
+		parser := pdfcontent.NewContentStreamParser(contentStream)
+		ops, err := parser.Parse()
+		if err != nil {
+			return err
+		}
+		for _, op := range *ops {
+			if op.Operand == "Tm" && len(op.Params) == 6 {
+				switch x := op.Params[4].(type) {
+				case *pdfcore.PdfObjectFloat:
+					lastX = int(float64(*x))
+				case *pdfcore.PdfObjectInteger:
+					lastX = int(*x)
+				}
+			} else if op.Operand == "Tj" && len(op.Params) == 1 {
+				text := op.Params[0].(*pdfcore.PdfObjectString).String()
+				if ignoreContent(text) {
+					// ignore
+				} else if columnIndex, ok := columHeadingsIndexes[text]; ok {
+					columnXs[columnIndex] = lastX
+				} else {
+					if timeParseable("01/02/2006 15:04 PM", text) && !stringSliceEmpty(columns) {
+						csvWriter.Write(columns)
+						for r := range columns {
+							columns[r] = ""
+						}
+					}
+					var i int
+					for i = len(columnXs) - 1; i >= 0; i-- {
+						if lastX >= columnXs[i] {
+							break
+						}
+					}
+					columns[i] = text
+				}
+			}
+		}
+	}
+
+	if len(columns) > 0 {
+		csvWriter.Write(columns)
+	}
 
 	return nil
 }
@@ -142,7 +148,7 @@ func timeParseable(layout, value string) bool {
 	return err == nil
 }
 
-func ignore(s string) bool {
+func ignoreContent(s string) bool {
 	return strings.TrimSpace(s) == "" ||
 		strings.HasPrefix(s, "Page") ||
 		strings.HasPrefix(s, "*") ||
