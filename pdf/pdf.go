@@ -90,18 +90,6 @@ func parseOperations(ops *pdfcontent.ContentStreamOperations) ([]clippercardtran
 	lastX := 0
 
 	transactions := []clippercardtransactionhistory.Transaction{}
-	storeTransaction := func(columns [8]string) {
-		transactions = append(transactions, clippercardtransactionhistory.Transaction{
-			Timestamp:       columns[0],
-			TransactionType: columns[1],
-			Location:        columns[2],
-			Route:           columns[3],
-			Product:         columns[4],
-			Debit:           columns[5],
-			Credit:          columns[6],
-			Balance:         columns[7],
-		})
-	}
 
 	for _, op := range *ops {
 		if op.Operand == "Tm" && len(op.Params) == 6 {
@@ -129,7 +117,11 @@ func parseOperations(ops *pdfcontent.ContentStreamOperations) ([]clippercardtran
 						}
 					}
 					if columnIndex == 0 && !stringSliceBlank(columns) {
-						storeTransaction(columns)
+						var err error
+						transactions, err = appendTransaction(transactions, columns)
+						if err != nil {
+							return nil, err
+						}
 						clearStringSlice(&columns)
 					}
 					columns[columnIndex] = text
@@ -141,9 +133,31 @@ func parseOperations(ops *pdfcontent.ContentStreamOperations) ([]clippercardtran
 	}
 
 	if !stringSliceBlank(columns) {
-		storeTransaction(columns)
+		var err error
+		transactions, err = appendTransaction(transactions, columns)
+		if err != nil {
+			return nil, err
+		}
 	}
 
+	return transactions, nil
+}
+
+func appendTransaction(transactions []clippercardtransactionhistory.Transaction, columns [8]string) ([]clippercardtransactionhistory.Transaction, error) {
+	t, err := time.Parse("01/02/2006 15:04 PM", columns[0])
+	if err != nil {
+		return nil, err
+	}
+	transactions = append(transactions, clippercardtransactionhistory.Transaction{
+		Timestamp:       t,
+		TransactionType: columns[1],
+		Location:        columns[2],
+		Route:           columns[3],
+		Product:         columns[4],
+		Debit:           columns[5],
+		Credit:          columns[6],
+		Balance:         columns[7],
+	})
 	return transactions, nil
 }
 

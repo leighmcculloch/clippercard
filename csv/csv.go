@@ -19,6 +19,8 @@ var headings = [8]string{
 	"Balance",
 }
 
+const timestampFormat = "01/02/2006 15:04 PM"
+
 // TransationsToCsv converts slice of Transactions into CSV, writing the CSV to
 // the writer.
 func TransationsToCsv(w io.Writer, transactions []clippercardtransactionhistory.Transaction, includeHeadings bool) error {
@@ -46,7 +48,7 @@ func TransationsToCsv(w io.Writer, transactions []clippercardtransactionhistory.
 
 func transactionColumns(t clippercardtransactionhistory.Transaction) [8]string {
 	return [8]string{
-		t.Timestamp,
+		t.Timestamp.Format(timestampFormat),
 		t.TransactionType,
 		t.Location,
 		t.Route,

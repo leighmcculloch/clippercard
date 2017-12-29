@@ -1,8 +1,10 @@
 package clippercardtransactionhistory
 
+import "time"
+
 // Transaction is a single transaction in a ClipperCard transaction history.
 type Transaction struct {
-	Timestamp       string
+	Timestamp       time.Time
 	TransactionType string
 	Location        string
 	Route           string

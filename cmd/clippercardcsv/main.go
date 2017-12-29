@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"4d63.com/clippercardtransactionhistory/csv"
+	"4d63.com/clippercardtransactionhistory/filters"
 	"4d63.com/clippercardtransactionhistory/pdf"
 )
 
@@ -23,6 +24,7 @@ func main() {
 func cmd() error {
 	help := flag.Bool("help", false, "Print this help")
 	headings := flag.Bool("headings", true, "Include headings on columns")
+	filterWeekdaysStr := flag.String("filter-weekdays", allWeekdays, "Weekdays to filter by, only transactions occurring on these weekdays will be included in the CSV")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n\n", os.Args[0])
 
@@ -40,6 +42,11 @@ func cmd() error {
 	if *help {
 		flag.Usage()
 		return nil
+	}
+
+	filterWeekdays, err := parseWeekdays(*filterWeekdaysStr)
+	if err != nil {
+		return err
 	}
 
 	args := flag.Args()
@@ -71,7 +78,9 @@ func cmd() error {
 		return fmt.Errorf("error parsing pdf: %s", err)
 	}
 
-	err = csv.TransationsToCsv(os.Stdout, transactionHistory.Transactions, *headings)
+	transactions := filters.Weekday(transactionHistory.Transactions, filterWeekdays)
+
+	err = csv.TransationsToCsv(os.Stdout, transactions, *headings)
 	if err != nil {
 		return err
 	}
