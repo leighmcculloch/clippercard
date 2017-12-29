@@ -35,17 +35,15 @@ func PdfToCsv(w io.Writer, r io.ReadSeeker) error {
 		return fmt.Errorf("error getting number of pages: %s", err)
 	}
 
-	for i := 0; i < numPages; i++ {
-		pageNum := i + 1
-
+	for pageNum := 1; pageNum <= numPages; pageNum++ {
 		page, err := pdfReader.GetPage(pageNum)
 		if err != nil {
-			return fmt.Errorf("error getting page %d of %d: %s", i+1, numPages, err)
+			return fmt.Errorf("error getting page %d of %d: %s", pageNum, numPages, err)
 		}
 
 		err = pdfPageToCsv(csvWriter, page)
 		if err != nil {
-			return fmt.Errorf("error converting page %d of %d: %s", i+1, numPages, err)
+			return fmt.Errorf("error converting page %d of %d: %s", pageNum, numPages, err)
 		}
 	}
 
