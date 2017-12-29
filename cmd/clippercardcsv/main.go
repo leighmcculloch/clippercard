@@ -22,6 +22,7 @@ func main() {
 
 func cmd() error {
 	help := flag.Bool("help", false, "Print this help")
+	headings := flag.Bool("headings", true, "Include headings on columns")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n\n", os.Args[0])
 
@@ -70,7 +71,7 @@ func cmd() error {
 		return fmt.Errorf("error parsing pdf: %s", err)
 	}
 
-	err = csv.TransationsToCsv(os.Stdout, transactionHistory.Transactions)
+	err = csv.TransationsToCsv(os.Stdout, transactionHistory.Transactions, *headings)
 	if err != nil {
 		return err
 	}
