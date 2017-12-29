@@ -107,19 +107,17 @@ func pdfOperationsToCsv(csvWriter *csv.Writer, ops *pdfcontent.ContentStreamOper
 				} else if columnIndex, ok := columHeadingsIndexes[text]; ok {
 					columnXs[columnIndex] = lastX
 				} else {
-					if timeParseable("01/02/2006 15:04 PM", text) && !stringSliceBlank(columns) {
-						csvWriter.Write(columns)
-						for r := range columns {
-							columns[r] = ""
-						}
-					}
-					var i int
-					for i = len(columnXs) - 1; i >= 0; i-- {
-						if lastX >= columnXs[i] {
+					var columnIndex int
+					for columnIndex = len(columnXs) - 1; columnIndex >= 0; columnIndex-- {
+						if lastX >= columnXs[columnIndex] {
 							break
 						}
 					}
-					columns[i] = text
+					if columnIndex == 0 && !stringSliceBlank(columns) {
+						csvWriter.Write(columns)
+						clearStringSlice(columns)
+					}
+					columns[columnIndex] = text
 				}
 			default:
 				return fmt.Errorf("invalid Tj parameters: %v", op.Params)
@@ -158,4 +156,10 @@ func stringSliceBlank(slice []string) bool {
 		}
 	}
 	return true
+}
+
+func clearStringSlice(slice []string) {
+	for i := range slice {
+		slice[i] = ""
+	}
 }
