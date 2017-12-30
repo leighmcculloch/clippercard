@@ -1,0 +1,56 @@
+<! DOCTYPE html>
+<html>
+<head>
+<title>clippercardcsv</title>
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Quicksand" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato" />
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1756782-63"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-1756782-63');
+</script>
+</head>
+<body>
+<div class="content">
+<div class="description">
+<p>Convert a <a href="https://www.clippercard.com">Clipper card</a> transaction history PDF to CSV</p>
+</div>
+<div class="convert">
+<form action="/convert" method="post" enctype="multipart/form-data" id="form">
+<input type="file" accept=".pdf" name="pdf" id="pdf">
+<br/>
+<br/>
+Options:
+</br>
+<input type="checkbox" name="headings" value="true" checked id="headings"><label for="headings">Headings</label>
+<br/>
+<br/>
+Include transactions on days:
+<br/>
+<input type="checkbox" name="sunday" value="true" checked id="sunday"><label for="sunday">Sunday</label>
+<input type="checkbox" name="monday" value="true" checked id="monday"><label for="monday">Monday</label>
+<input type="checkbox" name="tuesday" value="true" checked id="tuesday"><label for="tuesday">Tuesday</label>
+<input type="checkbox" name="wednesday" value="true" checked id="wednesday"><label for="wednesday">Wednesday</label>
+<input type="checkbox" name="thursday" value="true" checked id="thursday"><label for="thursday">Thursday</label>
+<input type="checkbox" name="friday" value="true" checked id="friday"><label for="friday">Friday</label>
+<input type="checkbox" name="saturday" value="true" checked id="saturday"><label for="saturday">Saturday</label>
+</form>
+</div>
+<div class="tool">
+<p>Convert locally using the tool: <a href="https://github.com/leighmcculloch/clippercardtransactionhistory">clippercardcsv</a></p>
+</div>
+<div class="footer">
+<p>This website, the <a href="https://github.com/leighmcculloch/clippercardtransactionhistory">open source project</a>, and the clippercardcsv tool are not affiliated with Clipper<sup>&reg;</sup>, <a href="https://www.clippercard.com">clippercard.com</a>, or the Metropolitan Transportation Commission. Clipper is a trademark or registered trademark of the Metropolitan Transportation Commission. This website is provided as is, without warranty of any kind. <a href="https://github.com/leighmcculloch/clippercardtransactionhistory/blob/master/LICENSE">LICENSE</a></p>
+<p><a href="https://github.com/leighmcculloch/clippercardtransactionhistory">github.com/leighmcculloch/clippercardtransactionhistory</a></p>
+</div>
+</div>
+<script>
+document.getElementById("pdf").onchange = function() {
+	document.getElementById("form").submit();
+};
+</script>
+</body>
+</html>

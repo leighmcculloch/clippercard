@@ -1,0 +1,5 @@
+dispatch:
+- url: "*/convert"
+  service: convert
+- url: "*/.*"
+  service: default
