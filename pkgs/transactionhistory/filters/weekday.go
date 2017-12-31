@@ -3,13 +3,13 @@ package filters
 import (
 	"time"
 
-	"4d63.com/clippercardtransactionhistory"
+	"4d63.com/clippercard/pkgs/transactionhistory"
 )
 
 // Weekday filters transactions by the given weekday, returning only
 // transactions that occurred on that weekday.
-func Weekday(transactions []clippercardtransactionhistory.Transaction, weekdays []time.Weekday) []clippercardtransactionhistory.Transaction {
-	filtered := []clippercardtransactionhistory.Transaction{}
+func Weekday(transactions []transactionhistory.Transaction, weekdays []time.Weekday) []transactionhistory.Transaction {
+	filtered := []transactionhistory.Transaction{}
 	for _, t := range transactions {
 		if weekdaysContains(weekdays, t.Timestamp.Weekday()) {
 			filtered = append(filtered, t)

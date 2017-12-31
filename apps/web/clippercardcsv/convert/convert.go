@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"4d63.com/clippercardtransactionhistory/csv"
-	"4d63.com/clippercardtransactionhistory/filters"
-	"4d63.com/clippercardtransactionhistory/pdf"
+	"4d63.com/clippercard/pkgs/transactionhistory/csv"
+	"4d63.com/clippercard/pkgs/transactionhistory/filters"
+	"4d63.com/clippercard/pkgs/transactionhistory/pdf"
 )
 
 var weekdays = map[string]time.Weekday{

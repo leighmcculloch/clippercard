@@ -8,10 +8,7 @@ run:
 		convert/app.yaml
 
 push:
-	gcloud app deploy \
-	       --project clippercardcsv \
-       	       dispatch.yaml \
-	       default/app.yaml \
-	       convert/app.yaml
+	appcfg.py --noauth_local_webserver -A clippercardcsv -V $$(date --utc +%Y%m%dt%H%M%S) update default/app.yaml convert/app.yaml
+	appcfg.py --noauth_local_webserver -A clippercardcsv update_dispatch .
 
 deploy: push

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"4d63.com/clippercardtransactionhistory"
+	"4d63.com/clippercard/pkgs/transactionhistory"
 )
 
 var headings = [8]string{
@@ -23,7 +23,7 @@ const timestampFormat = "01/02/2006 15:04 PM"
 
 // TransationsToCsv converts slice of Transactions into CSV, writing the CSV to
 // the writer.
-func TransationsToCsv(w io.Writer, transactions []clippercardtransactionhistory.Transaction, includeHeadings bool) error {
+func TransationsToCsv(w io.Writer, transactions []transactionhistory.Transaction, includeHeadings bool) error {
 	csvWriter := csv.NewWriter(w)
 
 	if includeHeadings {
@@ -46,7 +46,7 @@ func TransationsToCsv(w io.Writer, transactions []clippercardtransactionhistory.
 	return nil
 }
 
-func transactionColumns(t clippercardtransactionhistory.Transaction) [8]string {
+func transactionColumns(t transactionhistory.Transaction) [8]string {
 	return [8]string{
 		t.Timestamp.Format(timestampFormat),
 		t.TransactionType,

@@ -6,15 +6,15 @@ import (
 	"strings"
 	"time"
 
-	"4d63.com/clippercardtransactionhistory"
+	"4d63.com/clippercard/pkgs/transactionhistory"
 	rscpdf "rsc.io/pdf"
 )
 
 // Parse converts a reader to a slice of Transactions. The reader should be a
 // container the contents of a PDF file.
-func Parse(r io.ReaderAt, size int64) (clippercardtransactionhistory.TransactionHistory, error) {
-	history := clippercardtransactionhistory.TransactionHistory{
-		Transactions: []clippercardtransactionhistory.Transaction{},
+func Parse(r io.ReaderAt, size int64) (transactionhistory.TransactionHistory, error) {
+	history := transactionhistory.TransactionHistory{
+		Transactions: []transactionhistory.Transaction{},
 	}
 
 	pdfReader, err := rscpdf.NewReader(r, size)
@@ -38,7 +38,7 @@ func Parse(r io.ReaderAt, size int64) (clippercardtransactionhistory.Transaction
 	return history, nil
 }
 
-func parsePage(page rscpdf.Page) ([]clippercardtransactionhistory.Transaction, error) {
+func parsePage(page rscpdf.Page) ([]transactionhistory.Transaction, error) {
 	contents := page.V.Key("Contents")
 
 	columHeadingsIndexes := map[string]int{
@@ -54,7 +54,7 @@ func parsePage(page rscpdf.Page) ([]clippercardtransactionhistory.Transaction, e
 	columns := [8]string{}
 	lastX := 0
 
-	transactions := []clippercardtransactionhistory.Transaction{}
+	transactions := []transactionhistory.Transaction{}
 
 	rscpdf.Interpret(contents, func(stk *rscpdf.Stack, op string) {
 		params := make([]rscpdf.Value, stk.Len())
@@ -108,12 +108,12 @@ func parsePage(page rscpdf.Page) ([]clippercardtransactionhistory.Transaction, e
 	return transactions, nil
 }
 
-func appendTransaction(transactions []clippercardtransactionhistory.Transaction, columns [8]string) ([]clippercardtransactionhistory.Transaction, error) {
+func appendTransaction(transactions []transactionhistory.Transaction, columns [8]string) ([]transactionhistory.Transaction, error) {
 	t, err := time.Parse("01/02/2006 15:04 PM", columns[0])
 	if err != nil {
 		return nil, err
 	}
-	transactions = append(transactions, clippercardtransactionhistory.Transaction{
+	transactions = append(transactions, transactionhistory.Transaction{
 		Timestamp:       t,
 		TransactionType: columns[1],
 		Location:        columns[2],

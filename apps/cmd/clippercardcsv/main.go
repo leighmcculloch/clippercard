@@ -1,4 +1,4 @@
-package main // import "4d63.com/clippercardtransactionhistory/apps/cmd/clippercardcsv"
+package main // import "4d63.com/clippercard/apps/cmd/clippercardcsv"
 
 import (
 	"bytes"
@@ -8,9 +8,9 @@ import (
 	"io/ioutil"
 	"os"
 
-	"4d63.com/clippercardtransactionhistory/csv"
-	"4d63.com/clippercardtransactionhistory/filters"
-	"4d63.com/clippercardtransactionhistory/pdf"
+	"4d63.com/clippercard/pkgs/transactionhistory/csv"
+	"4d63.com/clippercard/pkgs/transactionhistory/filters"
+	"4d63.com/clippercard/pkgs/transactionhistory/pdf"
 )
 
 func main() {

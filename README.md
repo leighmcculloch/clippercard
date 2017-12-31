@@ -1,19 +1,17 @@
-# clippercardtransactionhistory
-Tool to convert ClipperCard transaction history PDFs to CSV.
+# clippercard
+Tools and packages relating to [ClipperCard](https://www.clippercard.com).
 
-## Web
+## Apps/Tools
+
+### clippercardcsv (web)
 
 [clippercardcsv.com](https://clippercardcsv.com)
 
-## CLI
-
-### Install
+### clippercardcsv (cli)
 
 ```
-$ go get 4d63.com/clippercardtransactionhistory/apps/cmd/clippercardcsv
+$ go get 4d63.com/clippercard/transactionhistory/apps/cmd/clippercardcsv
 ```
-
-### Usage
 
 ```
 Usage of clippercardcsv:
@@ -28,14 +26,16 @@ Flags:
         Print this help
 ```
 
-## Package
+## Packages
+
+### transactionhistory
 
 ```go
-import "4d63.com/clippercardtransactionhistory"
+import "4d63.com/clippercard/transactionhistory/pdf"
 ```
 
 ```go
-transactionHistory, err := clippercardtransactionhistory.Parse(file)
+transactionHistory, err := pdf.Parse(file)
 if err != nil {
 	// error parsing
 }

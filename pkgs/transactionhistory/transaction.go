@@ -1,4 +1,4 @@
-package clippercardtransactionhistory
+package transactionhistory
 
 import "time"
 
