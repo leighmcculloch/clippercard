@@ -8,6 +8,10 @@ div {
 	margin: 20px 0;
 }
 
+span.nowrap {
+	white-space: nowrap;
+}
+
 .content {
 	max-width: 500px;
 	margin-left: auto;
@@ -32,6 +36,17 @@ div {
 .convert form {
 	margin: 0;
 	padding: 0;
+}
+
+.convert form #submit {
+	float: right;
+}
+
+.convert form::after {
+	content: " ";
+	display: block;
+	height: 0;
+	clear: both;
 }
 
 .footer {

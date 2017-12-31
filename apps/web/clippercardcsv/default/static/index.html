@@ -30,13 +30,16 @@ Options:
 <br/>
 Include transactions on days:
 <br/>
-<input type="checkbox" name="sunday" value="true" checked id="sunday"><label for="sunday">Sunday</label>
-<input type="checkbox" name="monday" value="true" checked id="monday"><label for="monday">Monday</label>
-<input type="checkbox" name="tuesday" value="true" checked id="tuesday"><label for="tuesday">Tuesday</label>
-<input type="checkbox" name="wednesday" value="true" checked id="wednesday"><label for="wednesday">Wednesday</label>
-<input type="checkbox" name="thursday" value="true" checked id="thursday"><label for="thursday">Thursday</label>
-<input type="checkbox" name="friday" value="true" checked id="friday"><label for="friday">Friday</label>
-<input type="checkbox" name="saturday" value="true" checked id="saturday"><label for="saturday">Saturday</label>
+<span class="nowrap"><input type="checkbox" name="sunday" value="true" checked id="sunday"><label for="sunday">Sunday</label></span>
+<span class="nowrap"><input type="checkbox" name="monday" value="true" checked id="monday"><label for="monday">Monday</label></span>
+<span class="nowrap"><input type="checkbox" name="tuesday" value="true" checked id="tuesday"><label for="tuesday">Tuesday</label></span>
+<span class="nowrap"><input type="checkbox" name="wednesday" value="true" checked id="wednesday"><label for="wednesday">Wednesday</label></span>
+<span class="nowrap"><input type="checkbox" name="thursday" value="true" checked id="thursday"><label for="thursday">Thursday</label></span>
+<span class="nowrap"><input type="checkbox" name="friday" value="true" checked id="friday"><label for="friday">Friday</label></span>
+<span class="nowrap"><input type="checkbox" name="saturday" value="true" checked id="saturday"><label for="saturday">Saturday</label></span>
+<br/>
+<br/>
+<input type="submit" value="Convert" id="submit">
 </form>
 </div>
 <div class="tool">
@@ -47,10 +50,5 @@ Include transactions on days:
 <p><a href="https://github.com/leighmcculloch/clippercardtransactionhistory">github.com/leighmcculloch/clippercardtransactionhistory</a></p>
 </div>
 </div>
-<script>
-document.getElementById("pdf").onchange = function() {
-	document.getElementById("form").submit();
-};
-</script>
 </body>
 </html>
