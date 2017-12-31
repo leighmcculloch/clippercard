@@ -1,0 +1,5 @@
+ignored = ["google.golang.org/appengine*"]
+
+[[constraint]]
+  branch = "master"
+  name = "rsc.io/pdf"

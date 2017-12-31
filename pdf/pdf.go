@@ -7,42 +7,25 @@ import (
 	"time"
 
 	"4d63.com/clippercardtransactionhistory"
-
-	pdfcontent "github.com/unidoc/unidoc/pdf/contentstream"
-	pdfcore "github.com/unidoc/unidoc/pdf/core"
-	pdfmodel "github.com/unidoc/unidoc/pdf/model"
+	rscpdf "rsc.io/pdf"
 )
 
 // Parse converts a reader to a slice of Transactions. The reader should be a
 // container the contents of a PDF file.
-func Parse(r io.ReadSeeker) (clippercardtransactionhistory.TransactionHistory, error) {
+func Parse(r io.ReaderAt, size int64) (clippercardtransactionhistory.TransactionHistory, error) {
 	history := clippercardtransactionhistory.TransactionHistory{
 		Transactions: []clippercardtransactionhistory.Transaction{},
 	}
 
-	pdfReader, err := pdfmodel.NewPdfReader(r)
+	pdfReader, err := rscpdf.NewReader(r, size)
 	if err != nil {
 		return history, fmt.Errorf("error loading pdf: %s", err)
 	}
 
-	encrypted, err := pdfReader.IsEncrypted()
-	if err != nil {
-		return history, fmt.Errorf("error loading encryption details from pdf: %s", err)
-	}
-	if encrypted {
-		return history, fmt.Errorf("pdf is encrypted and cannot be read")
-	}
-
-	numPages, err := pdfReader.GetNumPages()
-	if err != nil {
-		return history, fmt.Errorf("error getting number of pages: %s", err)
-	}
+	numPages := pdfReader.NumPage()
 
 	for pageNum := 1; pageNum <= numPages; pageNum++ {
-		page, err := pdfReader.GetPage(pageNum)
-		if err != nil {
-			return history, fmt.Errorf("error getting page %d of %d: %s", pageNum, numPages, err)
-		}
+		page := pdfReader.Page(pageNum)
 
 		transactions, err := parsePage(page)
 		if err != nil {
@@ -55,27 +38,9 @@ func Parse(r io.ReadSeeker) (clippercardtransactionhistory.TransactionHistory, e
 	return history, nil
 }
 
-func parsePage(page *pdfmodel.PdfPage) ([]clippercardtransactionhistory.Transaction, error) {
-	contentStreams, err := page.GetContentStreams()
-	if err != nil {
-		return nil, fmt.Errorf("error getting content streams: %s", err)
-	}
+func parsePage(page rscpdf.Page) ([]clippercardtransactionhistory.Transaction, error) {
+	contents := page.V.Key("Contents")
 
-	contentStream := ""
-	for _, cs := range contentStreams {
-		contentStream += cs
-	}
-
-	parser := pdfcontent.NewContentStreamParser(contentStream)
-	ops, err := parser.Parse()
-	if err != nil {
-		return nil, fmt.Errorf("error parsing content stream: %s", err)
-	}
-
-	return parseOperations(ops)
-}
-
-func parseOperations(ops *pdfcontent.ContentStreamOperations) ([]clippercardtransactionhistory.Transaction, error) {
 	columHeadingsIndexes := map[string]int{
 		"TRANSACTION TYPE": 1,
 		"LOCATION":         2,
@@ -91,20 +56,22 @@ func parseOperations(ops *pdfcontent.ContentStreamOperations) ([]clippercardtran
 
 	transactions := []clippercardtransactionhistory.Transaction{}
 
-	for _, op := range *ops {
-		if op.Operand == "Tm" && len(op.Params) == 6 {
-			switch x := op.Params[4].(type) {
-			case *pdfcore.PdfObjectFloat:
-				lastX = int(float64(*x))
-			case *pdfcore.PdfObjectInteger:
-				lastX = int(*x)
-			default:
-				return nil, fmt.Errorf("invalid Tm parameters: %v", op.Params)
+	rscpdf.Interpret(contents, func(stk *rscpdf.Stack, op string) {
+		params := make([]rscpdf.Value, stk.Len())
+		for i := stk.Len() - 1; i >= 0; i-- {
+			params[i] = stk.Pop()
+		}
+		if op == "Tm" && len(params) == 6 {
+			switch params[4].Kind() {
+			case rscpdf.Real:
+				lastX = int(params[4].Float64())
+			case rscpdf.Integer:
+				lastX = int(params[4].Int64())
 			}
-		} else if op.Operand == "Tj" && len(op.Params) == 1 {
-			switch param := op.Params[0].(type) {
-			case *pdfcore.PdfObjectString:
-				text := param.String()
+		} else if op == "Tj" && len(params) == 1 {
+			switch params[0].Kind() {
+			case rscpdf.String:
+				text := params[0].Text()
 				if ignoreText(text) {
 					// ignore
 				} else if columnIndex, ok := columHeadingsIndexes[text]; ok {
@@ -120,17 +87,15 @@ func parseOperations(ops *pdfcontent.ContentStreamOperations) ([]clippercardtran
 						var err error
 						transactions, err = appendTransaction(transactions, columns)
 						if err != nil {
-							return nil, err
+							//return nil, err
 						}
 						clearStringSlice(&columns)
 					}
 					columns[columnIndex] = text
 				}
-			default:
-				return nil, fmt.Errorf("invalid Tj parameters: %v", op.Params)
 			}
 		}
-	}
+	})
 
 	if !stringSliceBlank(columns) {
 		var err error

@@ -51,7 +51,8 @@ func cmd() error {
 
 	args := flag.Args()
 
-	var in io.ReadSeeker
+	var in io.ReaderAt
+	var size int64
 
 	switch len(args) {
 	default:
@@ -63,6 +64,7 @@ func cmd() error {
 			return err
 		}
 		in = bytes.NewReader(data)
+		size = int64(len(data))
 	case 1:
 		filename := args[0]
 		file, err := os.Open(filename)
@@ -71,9 +73,15 @@ func cmd() error {
 		}
 		defer file.Close()
 		in = file
+
+		fileInfo, err := file.Stat()
+		if err != nil {
+			return err
+		}
+		size = fileInfo.Size()
 	}
 
-	transactionHistory, err := pdf.Parse(in)
+	transactionHistory, err := pdf.Parse(in, size)
 	if err != nil {
 		return fmt.Errorf("error parsing pdf: %s", err)
 	}

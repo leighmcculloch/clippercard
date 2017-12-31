@@ -1,7 +1,9 @@
 package app
 
 import (
+	"bytes"
 	"context"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -37,8 +39,13 @@ func convertHandler(c context.Context, w http.ResponseWriter, r *http.Request) e
 	if err != nil {
 		return err
 	}
+	uploadedPdfBytes, err := ioutil.ReadAll(uploadedPdf)
+	if err != nil {
+		return err
+	}
+	uploadedPdfReader := bytes.NewReader(uploadedPdfBytes)
 
-	transactionHistory, err := pdf.Parse(uploadedPdf)
+	transactionHistory, err := pdf.Parse(uploadedPdfReader, uploadedPdfReader.Size())
 	if err != nil {
 		return err
 	}
