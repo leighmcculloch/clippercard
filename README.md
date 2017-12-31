@@ -10,7 +10,7 @@ Tool to convert ClipperCard transaction history PDFs to CSV.
 ### Install
 
 ```
-$ go get 4d63.com/clippercardtransactionhistory/cmd/clippercardcsv
+$ go get 4d63.com/clippercardtransactionhistory/apps/cmd/clippercardcsv
 ```
 
 ### Usage

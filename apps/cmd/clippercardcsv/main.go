@@ -1,4 +1,4 @@
-package main // import "4d63.com/clippercardtransactionhistory/cmd/clippercardcsv"
+package main // import "4d63.com/clippercardtransactionhistory/apps/cmd/clippercardcsv"
 
 import (
 	"bytes"
