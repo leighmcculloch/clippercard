@@ -86,7 +86,7 @@ func cmd() error {
 		return fmt.Errorf("error parsing pdf: %s", err)
 	}
 
-	transactions := filters.Weekday(transactionHistory.Transactions, filterWeekdays)
+	transactions := filters.ByWeekday(transactionHistory.Transactions, filterWeekdays)
 
 	err = csv.TransationsToCsv(os.Stdout, transactions, *headings)
 	if err != nil {
