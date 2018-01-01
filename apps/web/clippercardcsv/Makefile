@@ -1,6 +1,10 @@
 export CLOUDFLARE_ZONE = 741f445c1ab98f55a14bc40b85f93184
 
-VERSION := $(shell date --utc +%Y%m%dt%H%M%S)
+ifeq ($(strip $(shell git status --porcelain)),)
+VERSION := $(shell git show -s --format=%cd --date=format:'%Y%m%dt%H%M%S' HEAD)-$(shell git rev-parse --short HEAD)
+else
+VERSION := $(shell date --utc +%Y%m%dt%H%M%S)-dev
+endif
 
 run:
 	dev_appserver.py \
