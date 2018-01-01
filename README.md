@@ -9,9 +9,24 @@ Tools and packages relating to [ClipperCard](https://www.clippercard.com).
 
 ### clippercardcsv (cli)
 
+#### Install
+
+##### Linux, macOS, Windows
+
+Download and install the binary from the [releases](https://github.com/leighmcculloch/clippercard/releases) page.
+
+##### macOS
+
 ```
-$ go get 4d63.com/clippercard/transactionhistory/apps/cmd/clippercardcsv
+brew install 4d63/clippercard/clippercardcsv
 ```
+
+##### Source
+```
+go get 4d63.com/clippercard/transactionhistory/apps/cmd/clippercardcsv
+```
+
+#### Usage
 
 ```
 Usage of clippercardcsv:
@@ -22,8 +37,14 @@ Examples:
   cat ridehistory.pdf | clippercardcsv > ridehistory.csv
 
 Flags:
+  -filter-weekdays string
+        Weekdays to filter by, only transactions occurring on these weekdays will be included in the CSV (default "monday,tuesday,wednesday,thursday,friday,saturday,sunday")
+  -headings
+        Include headings on columns (default true)
   -help
         Print this help
+  -version
+        Print version
 ```
 
 ## Packages

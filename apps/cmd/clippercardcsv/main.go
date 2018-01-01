@@ -13,6 +13,8 @@ import (
 	"4d63.com/clippercard/pkgs/transactionhistory/pdf"
 )
 
+var version = "from source"
+
 func main() {
 	err := cmd()
 	if err != nil {
@@ -22,7 +24,8 @@ func main() {
 }
 
 func cmd() error {
-	help := flag.Bool("help", false, "Print this help")
+	printHelp := flag.Bool("help", false, "Print this help")
+	printVersion := flag.Bool("version", false, "Print version")
 	headings := flag.Bool("headings", true, "Include headings on columns")
 	filterWeekdaysStr := flag.String("filter-weekdays", allWeekdays, "Weekdays to filter by, only transactions occurring on these weekdays will be included in the CSV")
 	flag.Usage = func() {
@@ -39,8 +42,13 @@ func cmd() error {
 	}
 	flag.Parse()
 
-	if *help {
+	if *printHelp {
 		flag.Usage()
+		return nil
+	}
+
+	if *printVersion {
+		fmt.Fprintln(os.Stderr, "clippercardcsv", version)
 		return nil
 	}
 

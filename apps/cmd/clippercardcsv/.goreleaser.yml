@@ -1,0 +1,39 @@
+project_name: clippercardcsv
+
+builds:
+  - binary: clippercardcsv
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - 386
+
+archive:
+  wrap_in_directory: true
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
+  replacements:
+    amd64: x64
+    386: x86
+    darwin: macos
+  files:
+    - ../../../LICENSE
+    - ../../../pkgs/transactionhistory/vendor/rsc.io/pdf/LICENSE
+
+brew:
+  github:
+    owner: 4d63
+    name: homebrew-clippercard
+  commit_author:
+    name: Leigh McCulloch
+    email: leigh@mcchouse.com
+  folder: Formula
+  homepage: "https://4d63.com/clippercard/apps/cmd/clippercardcsv"
+  test: |
+    system "#{bin}/clippercardcsv -help"
+  install: |
+    bin.install "clippercardcsv"
