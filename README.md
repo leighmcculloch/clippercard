@@ -3,12 +3,6 @@ Tools and packages relating to [Clipper card](https://www.clippercard.com).
 
 ## Apps/Tools
 
-### clippercardcsv (web)
-
-Convert a Clipper card transaction history PDF to CSV.
-
-[clippercardcsv.com](https://clippercardcsv.com)
-
 ### clippercardcsv (cli)
 
 Convert a Clipper card transaction history PDF to CSV.
